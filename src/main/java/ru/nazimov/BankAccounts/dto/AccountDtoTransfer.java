@@ -13,7 +13,7 @@ import java.math.BigDecimal;
 public class AccountDtoTransfer {
     @NotEmpty(message = "Имя не должно быть пустым")
     @Size(min = 2, max = 30, message = "Имя должно содержать от 2 до 30 символов")
-    @Pattern(regexp = "^[A-Za-z0-9]*$", message = "Имя должно состоять из буквенно-цифровых символов")
+    @Pattern(regexp = "^[А-ЯA-Za-zа-я0-9]*$", message = "Имя должно состоять из буквенно-цифровых символов")
     private String name;
 
     @NotEmpty(message = "ПИН-код не должен быть пустым")
@@ -21,7 +21,7 @@ public class AccountDtoTransfer {
     private String pin;
     @NotEmpty(message = "Имя для перевода не должно быть пустым")
     @Size(min = 2, max = 30, message = "Имя для перевода должно содержать от 2 до 30 символов")
-    @Pattern(regexp = "^[A-Za-z0-9]*$", message = "Имя для перевода должно состоять из буквенно-цифровых символов")
+    @Pattern(regexp = "^[А-ЯA-Za-zа-я0-9]*$", message = "Имя для перевода должно состоять из буквенно-цифровых символов")
     private String nameToTransfer;
     @NotNull(message = "Сумма перевода не должно быть пустым")
     @DecimalMin(value = "0", inclusive = false, message = "Сумма перевода должна быть больше 0.00")

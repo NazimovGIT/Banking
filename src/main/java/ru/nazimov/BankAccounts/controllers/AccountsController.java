@@ -4,18 +4,12 @@ import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 import ru.nazimov.BankAccounts.dto.*;
 import ru.nazimov.BankAccounts.services.AccountsService;
-import ru.nazimov.BankAccounts.util.*;
-import ru.nazimov.BankAccounts.util.Exceptions.AccountException;
 
 
 import java.util.List;
-
-import static ru.nazimov.BankAccounts.util.ErrorUtil.getErrorMessage;
-import static ru.nazimov.BankAccounts.util.ErrorUtil.getHttpStatus;
 
 
 @RestController
@@ -26,6 +20,7 @@ public class AccountsController {
 
     @GetMapping
     public ResponseEntity<List<AccountDtoResponse>> getAccounts() {
+
         return new ResponseEntity<>(accountsService.findAll(), HttpStatus.OK);
     }
 
@@ -55,21 +50,5 @@ public class AccountsController {
         accountsService.transfer(accountDto);
 
         return ResponseEntity.ok(HttpStatus.OK);
-    }
-
-    @ExceptionHandler
-    private ResponseEntity<AccountErrorResponse> handleAccountException(AccountException e) {
-        AccountErrorResponse response = new AccountErrorResponse
-                (e.getMessage(),
-                        System.currentTimeMillis());
-        return new ResponseEntity<>(response, getHttpStatus(e));
-    }
-
-    @ExceptionHandler
-    private ResponseEntity<AccountErrorResponse> handleValidationException(MethodArgumentNotValidException e) {
-        AccountErrorResponse response = new AccountErrorResponse
-                (getErrorMessage(e),
-                        System.currentTimeMillis());
-        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
 }

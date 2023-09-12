@@ -168,7 +168,7 @@ public class AccountsServiceTests {
         verify(repository, never()).save(mapper.map(dtoOperation, Account.class));
     }
     @Test
-    public void whenWithdrawFromAccountWithNotSufficientBalance_thenThrowAccountOperationException() {
+    public void whenWithdrawFromAccountWithInSufficientBalance_thenThrowAccountOperationException() {
         Account account = Account.builder()
                 .uuid(UUID.randomUUID())
                 .name(dtoOperation.getName())

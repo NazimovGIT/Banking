@@ -61,10 +61,8 @@ public class AccountsService {
     public boolean transfer(AccountDtoTransfer dtoTransfer) {
         AccountDtoOperation dtoOperation = mapper.map(dtoTransfer, AccountDtoOperation.class);
         Optional<Account> accountToDepositOp = repository.findByName(dtoTransfer.getNameToTransfer());
-        if (accountToDepositOp.isEmpty()) {
-            throw new AccountNotFoundException("Счета для зачисления с таким именем не существует");
-        }
-        Account accountToDeposit = accountToDepositOp.get();
+        Account accountToDeposit = accountToDepositOp.orElseThrow(() ->
+                new AccountNotFoundException("Счета для зачисления с таким именем не существует"));
 
         withdraw(dtoOperation);
         accountToDeposit.setBalance(accountToDeposit.getBalance().add(dtoTransfer.getAmount()));
