@@ -1,6 +1,5 @@
 package ru.nazimov.BankAccounts;
 
-import org.aspectj.lang.annotation.Before;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -46,7 +45,6 @@ public class AccountsServiceTests {
     private AccountDtoCreation dtoCreation;
     private AccountDtoOperation dtoOperation;
     @BeforeEach
-    @Before("wen")
     public void setup(){
         dtoCreation = AccountDtoCreation.builder()
                 .name("dtoCreation")
