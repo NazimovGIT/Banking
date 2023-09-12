@@ -101,8 +101,8 @@ public class AccountsServiceTests {
                 .balance(BigDecimal.valueOf(50))
                 .build();
 
-        doNothing().when(validator).validate(dtoOperation);
-        when(repository.findByName(expectedAccount.getName())).thenReturn(Optional.of(expectedAccount));
+        when(validator.validate(dtoOperation)).thenReturn(expectedAccount);
+        //when(repository.findByName(expectedAccount.getName())).thenReturn(Optional.of(expectedAccount));
         when(repository.save(expectedAccount)).thenReturn(expectedAccount);
 
         Account actualAccount = service.deposit(dtoOperation);
@@ -110,7 +110,7 @@ public class AccountsServiceTests {
         assertThat(actualAccount).isEqualTo(expectedAccount);
 
         verify(validator, times(1)).validate(dtoOperation);
-        verify(repository, times(1)).findByName(expectedAccount.getName());
+        //verify(repository, times(1)).findByName(expectedAccount.getName());
         verify(repository, times(1)).save(expectedAccount);
     }
     @Test
@@ -120,7 +120,7 @@ public class AccountsServiceTests {
         assertThrows(AccountException.class, (() -> validator.validate(dtoOperation)));
 
         verify(validator, times(1)).validate(dtoOperation);
-        verify(repository, never()).findByName(dtoOperation.getName());
+        //verify(repository, never()).findByName(dtoOperation.getName());
         verify(repository, never()).save(mapper.map(dtoOperation, Account.class));
     }
     @Test
@@ -130,7 +130,7 @@ public class AccountsServiceTests {
         assertThrows(AccountAuthorizationException.class, (() -> validator.validate(dtoOperation)));
 
         verify(validator, times(1)).validate(dtoOperation);
-        verify(repository, never()).findByName(dtoOperation.getName());
+        //verify(repository, never()).findByName(dtoOperation.getName());
         verify(repository, never()).save(mapper.map(dtoOperation, Account.class));
     }
     @Test
@@ -143,8 +143,9 @@ public class AccountsServiceTests {
                 .balance(BigDecimal.valueOf(50))
                 .build();
 
-        doNothing().when(validator).validate(dtoOperation);
-        when(repository.findByName(expectedAccount.getName())).thenReturn(Optional.of(expectedAccount));
+        //doNothing().when(validator).validate(dtoOperation);
+        when(validator.validate(dtoOperation)).thenReturn(expectedAccount);
+        //when(repository.findByName(expectedAccount.getName())).thenReturn(Optional.of(expectedAccount));
         when(repository.save(expectedAccount)).thenReturn(expectedAccount);
 
         Account actualAccount = service.withdraw(dtoOperation);
@@ -152,7 +153,7 @@ public class AccountsServiceTests {
         assertThat(actualAccount).isEqualTo(expectedAccount);
 
         verify(validator, times(1)).validate(dtoOperation);
-        verify(repository, times(1)).findByName(expectedAccount.getName());
+        //verify(repository, times(1)).findByName(expectedAccount.getName());
         verify(repository, times(1)).save(expectedAccount);
     }
     @Test

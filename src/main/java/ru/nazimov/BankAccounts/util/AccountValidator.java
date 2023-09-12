@@ -11,6 +11,7 @@ import ru.nazimov.BankAccounts.util.Exceptions.AccountException;
 import ru.nazimov.BankAccounts.util.Exceptions.AccountNotCreatedException;
 
 import java.util.Optional;
+import java.util.function.Supplier;
 
 
 @Component
@@ -24,12 +25,14 @@ public class AccountValidator {
         }
     }
 
-    public void validate(AccountDtoOperation accountDto) {
-        Optional<Account> account = accountsRepository.findByName(accountDto.getName());
-        if (account.isEmpty()) {
-            throw new AccountException("Счета с таким именем не существует");
-        } else if (!account.get().getPin().equals(accountDto.getPin())) {
+    public Account validate(AccountDtoOperation accountDto) {
+        Optional<Account> accountOp = accountsRepository.findByName(accountDto.getName());
+
+        Account account = accountOp.orElseThrow(()->new AccountException("Счета с таким именем не существует"));
+
+        if (!account.getPin().equals(accountDto.getPin())) {
             throw new AccountAuthorizationException("Неверный ПИН-код");
         }
+        return account;
     }
 }

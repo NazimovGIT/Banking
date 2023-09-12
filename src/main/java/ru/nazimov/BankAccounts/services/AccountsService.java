@@ -39,8 +39,7 @@ public class AccountsService {
 
     @Transactional
     public Account deposit(AccountDtoOperation dtoOperation) {
-        validator.validate(dtoOperation);
-        Account account = repository.findByName(dtoOperation.getName()).get();
+        Account account = validator.validate(dtoOperation);
         account.setBalance(account.getBalance().add(dtoOperation.getAmount()));
 
         return repository.save(account);
@@ -48,8 +47,7 @@ public class AccountsService {
 
     @Transactional
     public Account withdraw(AccountDtoOperation dtoOperation) {
-        validator.validate(dtoOperation);
-        Account account = repository.findByName(dtoOperation.getName()).get();
+        Account account = validator.validate(dtoOperation);
         BigDecimal newBalance = account.getBalance().subtract(dtoOperation.getAmount());
         if (newBalance.compareTo(BigDecimal.ZERO) < 0) {
             throw new AccountOperationException("Недостаточно средств на счете");
