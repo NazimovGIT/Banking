@@ -163,7 +163,7 @@ public class AccountsServiceTests {
         assertThrows(AccountException.class, (() -> validator.validate(dtoOperation)));
 
         verify(validator, times(1)).validate(dtoOperation);
-        verify(repository, never()).findByName(dtoOperation.getName());
+        //verify(repository, never()).findByName(dtoOperation.getName());
         verify(repository, never()).save(mapper.map(dtoOperation, Account.class));
     }
     @Test
@@ -173,7 +173,7 @@ public class AccountsServiceTests {
         assertThrows(AccountAuthorizationException.class, (() -> validator.validate(dtoOperation)));
 
         verify(validator, times(1)).validate(dtoOperation);
-        verify(repository, never()).findByName(dtoOperation.getName());
+        //verify(repository, never()).findByName(dtoOperation.getName());
         verify(repository, never()).save(mapper.map(dtoOperation, Account.class));
     }
     @Test
@@ -186,13 +186,14 @@ public class AccountsServiceTests {
                 .balance(BigDecimal.valueOf(20))
                 .build();
 
-        doNothing().when(validator).validate(dtoOperation);
-        when(repository.findByName(dtoOperation.getName())).thenReturn(Optional.of(account));
+        //doNothing().when(validator).validate(dtoOperation);
+        when(validator.validate(dtoOperation)).thenReturn(account);
+        //when(repository.findByName(dtoOperation.getName())).thenReturn(Optional.of(account));
 
         assertThrows(AccountOperationException.class, (() -> service.withdraw(dtoOperation)));
 
         verify(validator, times(1)).validate(dtoOperation);
-        verify(repository, times(1)).findByName(dtoOperation.getName());
+        //verify(repository, times(1)).findByName(dtoOperation.getName());
         verify(repository, never()).save(mapper.map(dtoOperation, Account.class));
     }
     @Test
@@ -223,8 +224,9 @@ public class AccountsServiceTests {
 
         when(mapper.map(dtoTransfer, AccountDtoOperation.class)).thenReturn(dtoOperation);
         when(repository.findByName(dtoTransfer.getNameToTransfer())).thenReturn(Optional.of(accountToDeposit));
-        doNothing().when(validator).validate(dtoOperation);
-        when(repository.findByName(dtoOperation.getName())).thenReturn(Optional.of(accountToWithdraw));
+        //doNothing().when(validator).validate(dtoOperation);
+        when(validator.validate(dtoOperation)).thenReturn(accountToWithdraw);
+        //when(repository.findByName(dtoOperation.getName())).thenReturn(Optional.of(accountToWithdraw));
         when(repository.save(accountToWithdraw)).thenReturn(accountToWithdraw);
         when(repository.save(accountToDeposit)).thenReturn(accountToDeposit);
 
@@ -233,7 +235,7 @@ public class AccountsServiceTests {
         verify(mapper, times(1)).map(dtoTransfer, AccountDtoOperation.class);
         verify(repository, times(1)).findByName(dtoTransfer.getNameToTransfer());
         verify(validator, times(1)).validate(dtoOperation);
-        verify(repository, times(1)).findByName(dtoOperation.getName());
+        //verify(repository, times(1)).findByName(dtoOperation.getName());
         verify(repository, times(1)).save(accountToWithdraw);
         verify(repository, times(1)).save(accountToDeposit);
     }
