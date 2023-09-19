@@ -1,4 +1,4 @@
-package ru.nazimov.BankAccounts.services;
+package ru.nazimov.BankAccounts.service;
 
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -8,24 +8,22 @@ import ru.nazimov.BankAccounts.dto.AccountDtoCreation;
 import ru.nazimov.BankAccounts.dto.AccountDtoOperation;
 import ru.nazimov.BankAccounts.dto.AccountDtoResponse;
 import ru.nazimov.BankAccounts.dto.AccountDtoTransfer;
-import ru.nazimov.BankAccounts.models.Account;
-import ru.nazimov.BankAccounts.repositories.AccountsRepository;
+import ru.nazimov.BankAccounts.model.Account;
+import ru.nazimov.BankAccounts.repository.AccountRepository;
 import ru.nazimov.BankAccounts.util.AccountUtil;
 import ru.nazimov.BankAccounts.util.AccountValidator;
-import ru.nazimov.BankAccounts.util.Exceptions.AccountNotFoundException;
-import ru.nazimov.BankAccounts.util.Exceptions.AccountOperationException;
-
+import ru.nazimov.BankAccounts.exception.AccountNotFoundException;
+import ru.nazimov.BankAccounts.exception.AccountOperationException;
 
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-
 @Service
 @AllArgsConstructor
-public class AccountsService {
-    private final AccountsRepository repository;
+public class AccountService {
+    private final AccountRepository repository;
     private final ModelMapper mapper;
     private final AccountValidator validator;
 
@@ -58,7 +56,7 @@ public class AccountsService {
     }
 
     @Transactional
-    public boolean transfer(AccountDtoTransfer dtoTransfer) {
+    public void transfer(AccountDtoTransfer dtoTransfer) {
         AccountDtoOperation dtoOperation = mapper.map(dtoTransfer, AccountDtoOperation.class);
         Optional<Account> accountToDepositOp = repository.findByName(dtoTransfer.getNameToTransfer());
         Account accountToDeposit = accountToDepositOp.orElseThrow(() ->
@@ -67,7 +65,6 @@ public class AccountsService {
         withdraw(dtoOperation);
         accountToDeposit.setBalance(accountToDeposit.getBalance().add(dtoTransfer.getAmount()));
         repository.save(accountToDeposit);
-        return true;
     }
 
     @Transactional(readOnly = true)

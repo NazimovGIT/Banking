@@ -1,4 +1,4 @@
-package ru.nazimov.BankAccounts.util;
+package ru.nazimov.BankAccounts.dto;
 
 import lombok.Getter;
 import lombok.Setter;

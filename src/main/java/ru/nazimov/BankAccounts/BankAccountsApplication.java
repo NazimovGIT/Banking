@@ -7,14 +7,7 @@ import org.springframework.context.annotation.Bean;
 
 @SpringBootApplication
 public class BankAccountsApplication {
-
     public static void main(String[] args) {
         SpringApplication.run(BankAccountsApplication.class, args);
     }
-
-    @Bean
-    public ModelMapper ModelMapper() {
-        return new ModelMapper();
-    }
-
 }

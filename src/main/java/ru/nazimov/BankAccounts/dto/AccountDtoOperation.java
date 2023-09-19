@@ -20,6 +20,7 @@ public class AccountDtoOperation {
     @NotEmpty(message = "ПИН-код не должен быть пустым")
     @Pattern(regexp = "\\d{4}", message = "ПИН-код должен состоять из 4 чисел")
     private String pin;
+
     @NotNull(message = "Сумма операции не должно быть пустым")
     @DecimalMin(value = "0.00", inclusive = false, message = "Сумма операции должна быть больше 0.00")
     @Digits(integer = 100, fraction = 2, message = "Сумма операции должна быть с точностью до копейки")

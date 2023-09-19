@@ -19,10 +19,12 @@ public class AccountDtoTransfer {
     @NotEmpty(message = "ПИН-код не должен быть пустым")
     @Pattern(regexp = "\\d{4}", message = "ПИН-код должен состоять из 4 чисел")
     private String pin;
+
     @NotEmpty(message = "Имя для перевода не должно быть пустым")
     @Size(min = 2, max = 30, message = "Имя для перевода должно содержать от 2 до 30 символов")
     @Pattern(regexp = "^[А-ЯA-Za-zа-я0-9]*$", message = "Имя для перевода должно состоять из буквенно-цифровых символов")
     private String nameToTransfer;
+
     @NotNull(message = "Сумма перевода не должно быть пустым")
     @DecimalMin(value = "0", inclusive = false, message = "Сумма перевода должна быть больше 0.00")
     @Digits(integer = 100, fraction = 2, message = "Сумма перевода должна быть с точностью до копейки")

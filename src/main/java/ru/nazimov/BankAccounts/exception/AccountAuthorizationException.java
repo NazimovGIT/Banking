@@ -1,4 +1,4 @@
-package ru.nazimov.BankAccounts.util.Exceptions;
+package ru.nazimov.BankAccounts.exception;
 
 public class AccountAuthorizationException extends AccountException {
     public AccountAuthorizationException(String msg) {
