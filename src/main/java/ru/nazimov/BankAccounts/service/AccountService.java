@@ -15,6 +15,7 @@ import ru.nazimov.BankAccounts.exception.AccountOperationException;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 @AllArgsConstructor
@@ -25,25 +26,32 @@ public class AccountService {
     private final AccountValidator validator;
 
     @Transactional
-    public Account create(AccountDto dtoCreation) {
+    public AccountDto create(AccountDto dtoCreation) {
         validator.validateToCreate(dtoCreation);
         Account account = mapper.toAccount(dtoCreation);
         account.setNumber(AccountUtil.getAccountNumber());
         account.setBalance(BigDecimal.ZERO);
 
-        return repository.save(account);
+        return mapper.toDto(repository.save(account));
+    }
+
+    public AccountDto getById(UUID id) {
+        Account account = repository.findById(id).orElseThrow(() ->
+                new AccountNotFoundException("Счет с таким идентификатором не существует."));
+
+        return mapper.toDto(account);
     }
 
     @Transactional
-    public Account deposit(AccountDto dtoOperation) {
+    public AccountDto deposit(AccountDto dtoOperation) {
         Account account = validator.validateToOperation(dtoOperation);
         account.setBalance(account.getBalance().add(dtoOperation.getAmount()));
 
-        return repository.save(account);
+        return mapper.toDto(repository.save(account));
     }
 
     @Transactional
-    public Account withdraw(AccountDto dtoOperation) {
+    public AccountDto withdraw(AccountDto dtoOperation) {
         Account account = validator.validateToOperation(dtoOperation);
         BigDecimal newBalance = account.getBalance().subtract(dtoOperation.getAmount());
         if (newBalance.compareTo(BigDecimal.ZERO) < 0) {
@@ -51,11 +59,11 @@ public class AccountService {
         }
         account.setBalance(newBalance);
 
-        return repository.save(account);
+        return mapper.toDto(repository.save(account));
     }
 
     @Transactional
-    public void transfer(AccountDto dtoTransfer) {
+    public AccountDto transfer(AccountDto dtoTransfer) {
         Optional<Account> accountToDepositOp = repository.findByName(dtoTransfer.getNameToTransfer());
         Account accountToDeposit = accountToDepositOp.orElseThrow(() ->
                 new AccountNotFoundException("Счета для зачисления с таким именем не существует"));
@@ -63,8 +71,9 @@ public class AccountService {
         withdraw(dtoTransfer);
         accountToDeposit.setBalance(accountToDeposit.getBalance().add(dtoTransfer.getAmount()));
 
-        repository.save(accountToDeposit);
+        return mapper.toDto(repository.save(accountToDeposit));
     }
+
 
     @Transactional(readOnly = true)
     public List<AccountDto> findAll() {

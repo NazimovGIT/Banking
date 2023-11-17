@@ -25,7 +25,8 @@ public class AccountValidator {
     public Account validateToOperation(AccountDto accountDto) {
         Optional<Account> accountOp = accountRepository.findByName(accountDto.getName());
 
-        Account account = accountOp.orElseThrow(()->new AccountException("Счета с таким именем не существует."));
+        Account account = accountOp.orElseThrow(() ->
+                new AccountException("Счета с таким именем не существует."));
 
         if (!account.getPin().equals(accountDto.getPin())) {
             throw new AccountAuthorizationException("Неверный ПИН-код.");

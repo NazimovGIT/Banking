@@ -17,6 +17,9 @@
 	<properties>
 		<java.version>17</java.version>
 		<mapstruct.version>1.5.5.Final</mapstruct.version>
+		<springdoc.version>2.0.2</springdoc.version>
+		<liquibase.version>4.19.0</liquibase.version>
+		<preliquibase.version>1.4.0</preliquibase.version>
 	</properties>
 
 	<dependencies>
@@ -84,6 +87,17 @@
 			<version>${mapstruct.version}</version>
 		</dependency>
 
+		<dependency>
+			<groupId>org.liquibase</groupId>
+			<artifactId>liquibase-core</artifactId>
+			<!--<version>${liquibase.version}</version>-->
+		</dependency>
+
+		<dependency>
+			<groupId>net.lbruun.springboot</groupId>
+			<artifactId>preliquibase-spring-boot-starter</artifactId>
+			<version>${preliquibase.version}</version>
+		</dependency>
 	</dependencies>
 
 	<build>
