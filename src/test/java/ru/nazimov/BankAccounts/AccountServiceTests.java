@@ -9,12 +9,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import org.modelmapper.ModelMapper;
-import ru.nazimov.BankAccounts.dto.AccountDtoCreation;
-import ru.nazimov.BankAccounts.dto.AccountDtoOperation;
-import ru.nazimov.BankAccounts.dto.AccountDtoResponse;
-import ru.nazimov.BankAccounts.dto.AccountDtoTransfer;
+import ru.nazimov.BankAccounts.dto.AccountDto;
 import ru.nazimov.BankAccounts.exception.*;
+import ru.nazimov.BankAccounts.mappers.AccountMapper;
 import ru.nazimov.BankAccounts.model.Account;
 import ru.nazimov.BankAccounts.repository.AccountRepository;
 import ru.nazimov.BankAccounts.service.AccountService;
@@ -37,19 +34,19 @@ public class AccountServiceTests {
     @Mock
     private AccountValidator validator;
     @Mock
-    private ModelMapper mapper;
+    private AccountMapper mapper;
     @InjectMocks
     private AccountService service;
-    private AccountDtoCreation dtoCreation;
-    private AccountDtoOperation dtoOperation;
+    private AccountDto dtoCreation;
+    private AccountDto dtoOperation;
 
     @BeforeEach
     public void setup() {
-        dtoCreation = AccountDtoCreation.builder()
+        dtoCreation = AccountDto.builder()
                 .name("dtoCreation")
                 .pin("1234")
                 .build();
-        dtoOperation = AccountDtoOperation.builder()
+        dtoOperation = AccountDto.builder()
                 .name("dtoOperation")
                 .pin("5678")
                 .amount(BigDecimal.valueOf(30))
@@ -66,29 +63,29 @@ public class AccountServiceTests {
                 .balance(BigDecimal.ZERO)
                 .build();
 
-        doNothing().when(validator).validate(dtoCreation);
-        when(mapper.map(dtoCreation, Account.class)).thenReturn(expectedAccount);
+        doNothing().when(validator).validateToCreate(dtoCreation);
+        when(mapper.toAccount(dtoCreation)).thenReturn(expectedAccount);
         when(repository.save(expectedAccount)).thenReturn(expectedAccount);
 
         Account actualAccount = service.create(dtoCreation);
 
         assertThat(actualAccount).isEqualTo(expectedAccount);
 
-        verify(validator).validate(dtoCreation);
-        verify(mapper).map(dtoCreation, Account.class);
+        verify(validator).validateToCreate(dtoCreation);
+        verify(mapper).toAccount(dtoCreation);
         verify(repository).save(expectedAccount);
     }
 
     @Test
     public void whenCreateAccountWithExistingAccountName_thenThrowAccountNotCreatedException() {
-        doThrow(AccountNotCreatedException.class).when(validator).validate(dtoCreation);
+        doThrow(AccountNotCreatedException.class).when(validator).validateToCreate(dtoCreation);
 
         assertThrows(AccountNotCreatedException.class, (() ->
-                validator.validate(dtoCreation)));
+                validator.validateToCreate(dtoCreation)));
 
-        verify(validator).validate(dtoCreation);
-        verify(mapper, never()).map(dtoCreation, Account.class);
-        verify(repository, never()).save(mapper.map(dtoCreation, Account.class));
+        verify(validator).validateToCreate(dtoCreation);
+        verify(mapper, never()).toAccount(dtoCreation);
+        verify(repository, never()).save(mapper.toAccount(dtoCreation));
     }
 
     @Test
@@ -101,35 +98,35 @@ public class AccountServiceTests {
                 .balance(BigDecimal.valueOf(50))
                 .build();
 
-        when(validator.validate(dtoOperation)).thenReturn(expectedAccount);
+        when(validator.validateToOperation(dtoOperation)).thenReturn(expectedAccount);
         when(repository.save(expectedAccount)).thenReturn(expectedAccount);
 
         Account actualAccount = service.deposit(dtoOperation);
 
         assertThat(actualAccount).isEqualTo(expectedAccount);
 
-        verify(validator).validate(dtoOperation);
+        verify(validator).validateToOperation(dtoOperation);
         verify(repository).save(expectedAccount);
     }
 
     @Test
     public void whenDepositToNotExistingAccount_thenThrowAccountException() {
-        doThrow(AccountException.class).when(validator).validate(dtoOperation);
+        doThrow(AccountException.class).when(validator).validateToOperation(dtoOperation);
 
-        assertThrows(AccountException.class, (() -> validator.validate(dtoOperation)));
+        assertThrows(AccountException.class, (() -> validator.validateToOperation(dtoOperation)));
 
-        verify(validator).validate(dtoOperation);
-        verify(repository, never()).save(mapper.map(dtoOperation, Account.class));
+        verify(validator).validateToOperation(dtoOperation);
+        verify(repository, never()).save(mapper.toAccount(dtoOperation));
     }
 
     @Test
     public void whenDepositWithInvalidPin_thenThrowAccountAuthorizationException() {
-        doThrow(AccountAuthorizationException.class).when(validator).validate(dtoOperation);
+        doThrow(AccountAuthorizationException.class).when(validator).validateToOperation(dtoOperation);
 
-        assertThrows(AccountAuthorizationException.class, (() -> validator.validate(dtoOperation)));
+        assertThrows(AccountAuthorizationException.class, (() -> validator.validateToOperation(dtoOperation)));
 
-        verify(validator).validate(dtoOperation);
-        verify(repository, never()).save(mapper.map(dtoOperation, Account.class));
+        verify(validator).validateToOperation(dtoOperation);
+        verify(repository, never()).save(mapper.toAccount(dtoOperation));
     }
 
     @Test
@@ -142,35 +139,35 @@ public class AccountServiceTests {
                 .balance(BigDecimal.valueOf(50))
                 .build();
 
-        when(validator.validate(dtoOperation)).thenReturn(expectedAccount);
+        when(validator.validateToOperation(dtoOperation)).thenReturn(expectedAccount);
         when(repository.save(expectedAccount)).thenReturn(expectedAccount);
 
         Account actualAccount = service.withdraw(dtoOperation);
 
         assertThat(actualAccount).isEqualTo(expectedAccount);
 
-        verify(validator).validate(dtoOperation);
+        verify(validator).validateToOperation(dtoOperation);
         verify(repository).save(expectedAccount);
     }
 
     @Test
     public void whenWithdrawFromNotExistingAccount_thenThrowAccountException() {
-        doThrow(AccountException.class).when(validator).validate(dtoOperation);
+        doThrow(AccountException.class).when(validator).validateToOperation(dtoOperation);
 
-        assertThrows(AccountException.class, (() -> validator.validate(dtoOperation)));
+        assertThrows(AccountException.class, (() -> validator.validateToOperation(dtoOperation)));
 
-        verify(validator).validate(dtoOperation);
-        verify(repository, never()).save(mapper.map(dtoOperation, Account.class));
+        verify(validator).validateToOperation(dtoOperation);
+        verify(repository, never()).save(mapper.toAccount(dtoOperation));
     }
 
     @Test
     public void whenWithdrawWithInvalidPin_thenThrowAccountAuthorizationException() {
-        doThrow(AccountAuthorizationException.class).when(validator).validate(dtoOperation);
+        doThrow(AccountAuthorizationException.class).when(validator).validateToOperation(dtoOperation);
 
-        assertThrows(AccountAuthorizationException.class, (() -> validator.validate(dtoOperation)));
+        assertThrows(AccountAuthorizationException.class, (() -> validator.validateToOperation(dtoOperation)));
 
-        verify(validator).validate(dtoOperation);
-        verify(repository, never()).save(mapper.map(dtoOperation, Account.class));
+        verify(validator).validateToOperation(dtoOperation);
+        verify(repository, never()).save(mapper.toAccount(dtoOperation));
     }
 
     @Test
@@ -183,25 +180,22 @@ public class AccountServiceTests {
                 .balance(BigDecimal.valueOf(20))
                 .build();
 
-        when(validator.validate(dtoOperation)).thenReturn(account);
+        when(validator.validateToOperation(dtoOperation)).thenReturn(account);
 
         assertThrows(AccountOperationException.class, (() -> service.withdraw(dtoOperation)));
 
-        verify(validator).validate(dtoOperation);
-        verify(repository, never()).save(mapper.map(dtoOperation, Account.class));
+        verify(validator).validateToOperation(dtoOperation);
+        verify(repository, never()).save(mapper.toAccount(dtoOperation));
     }
 
     @Test
-    public void whenTransferBetweenAccounts_thenReturnTrue() {
-        AccountDtoTransfer dtoTransfer = AccountDtoTransfer.builder()
+    public void whenTransferBetweenAccounts_thenSuccess() {
+        AccountDto dtoTransfer = AccountDto.builder()
                 .name("ExampleAccountName")
                 .pin("1234")
                 .nameToTransfer("ExampleAccountNameToTransfer")
                 .amount(BigDecimal.valueOf(30))
                 .build();
-        dtoOperation.setName(dtoTransfer.getName());
-        dtoOperation.setPin(dtoTransfer.getPin());
-        dtoOperation.setAmount(dtoTransfer.getAmount());
         Account accountToWithdraw = Account.builder()
                 .uuid(UUID.randomUUID())
                 .name(dtoTransfer.getName())
@@ -217,24 +211,22 @@ public class AccountServiceTests {
                 .balance(BigDecimal.valueOf(0))
                 .build();
 
-        when(mapper.map(dtoTransfer, AccountDtoOperation.class)).thenReturn(dtoOperation);
         when(repository.findByName(dtoTransfer.getNameToTransfer())).thenReturn(Optional.of(accountToDeposit));
-        when(validator.validate(dtoOperation)).thenReturn(accountToWithdraw);
+        when(validator.validateToOperation(dtoTransfer)).thenReturn(accountToWithdraw);
         when(repository.save(accountToWithdraw)).thenReturn(accountToWithdraw);
         when(repository.save(accountToDeposit)).thenReturn(accountToDeposit);
 
         service.transfer(dtoTransfer);
 
-        verify(mapper).map(dtoTransfer, AccountDtoOperation.class);
         verify(repository).findByName(dtoTransfer.getNameToTransfer());
-        verify(validator).validate(dtoOperation);
+        verify(validator).validateToOperation(dtoTransfer);
         verify(repository).save(accountToWithdraw);
         verify(repository).save(accountToDeposit);
     }
 
     @Test
     public void whenTransferToNotExistingAccount_thenThrowAccountNotFoundException() {
-        AccountDtoTransfer dtoTransfer = AccountDtoTransfer.builder()
+        AccountDto dtoTransfer = AccountDto.builder()
                 .name("ExampleAccountName")
                 .pin("1234")
                 .nameToTransfer("ExampleAccountNameToTransfer")
@@ -244,20 +236,18 @@ public class AccountServiceTests {
         dtoOperation.setPin(dtoTransfer.getPin());
         dtoOperation.setAmount(dtoTransfer.getAmount());
 
-        when(mapper.map(dtoTransfer, AccountDtoOperation.class)).thenReturn(dtoOperation);
         when(repository.findByName(dtoTransfer.getNameToTransfer())).thenReturn(Optional.empty());
 
         assertThrows(AccountNotFoundException.class, (() -> service.transfer(dtoTransfer)));
 
-        verify(mapper).map(dtoTransfer, AccountDtoOperation.class);
         verify(repository).findByName(dtoTransfer.getNameToTransfer());
-        verify(validator, never()).validate(dtoOperation);
+        verify(validator, never()).validateToOperation(dtoOperation);
         verify(repository, never()).findByName(dtoOperation.getName());
-        verify(repository, never()).save(mapper.map(dtoOperation, Account.class));
+        verify(repository, never()).save(mapper.toAccount(dtoOperation));
     }
 
     @Test
-    public void whenFindAllAccounts_thenReturnListOfAccountDtoResponseObjects() {
+    public void whenFindAllAccounts_thenReturnListOfAccountDtoObjects() {
         Account account1 = Account.builder()
                 .uuid(UUID.randomUUID())
                 .name("ExampleName1")
@@ -272,27 +262,27 @@ public class AccountServiceTests {
                 .number(getAccountNumber())
                 .balance(BigDecimal.valueOf(0))
                 .build();
-        AccountDtoResponse dtoResponse1 = AccountDtoResponse.builder()
+        AccountDto dtoResponse1 = AccountDto.builder()
                 .name(account1.getName())
                 .balance(account1.getBalance())
                 .build();
-        AccountDtoResponse dtoResponse2 = AccountDtoResponse.builder()
+        AccountDto dtoResponse2 = AccountDto.builder()
                 .name(account2.getName())
                 .balance(account2.getBalance())
                 .build();
         List<Account> accounts = List.of(account1, account2);
         when(repository.findAll()).thenReturn(accounts);
-        when(mapper.map(account1, AccountDtoResponse.class)).thenReturn(dtoResponse1);
-        when(mapper.map(account2, AccountDtoResponse.class)).thenReturn(dtoResponse2);
 
-        List<AccountDtoResponse> expected = List.of(dtoResponse1, dtoResponse2);
-        List<AccountDtoResponse> actual = service.findAll();
+        List<AccountDto> expected = List.of(dtoResponse1, dtoResponse2);
+
+        when(mapper.toListDto(accounts)).thenReturn(expected);
+
+        List<AccountDto> actual = service.findAll();
 
         assertThat(actual).isEqualTo(expected);
 
         verify(repository).findAll();
-        verify(mapper).map(account1, AccountDtoResponse.class);
-        verify(mapper).map(account2, AccountDtoResponse.class);
+        verify(mapper).toListDto(accounts);
     }
 
     @Test
@@ -302,7 +292,7 @@ public class AccountServiceTests {
         assertThrows(AccountNotFoundException.class, (() -> service.findAll()));
 
         verify(repository).findAll();
-        verify(mapper, never()).map(new Account(), AccountDtoResponse.class);
-        verify(mapper, never()).map(new Account(), AccountDtoResponse.class);
+        verify(mapper, never()).toDto(new Account());
+        verify(mapper, never()).toDto(new Account());
     }
 }

@@ -1,53 +1,63 @@
 package ru.nazimov.BankAccounts.controller;
 
-import jakarta.validation.Valid;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.nazimov.BankAccounts.dto.*;
+import ru.nazimov.BankAccounts.dto.validation.OnCreate;
+import ru.nazimov.BankAccounts.dto.validation.OnOperation;
+import ru.nazimov.BankAccounts.dto.validation.OnTransfer;
 import ru.nazimov.BankAccounts.service.AccountService;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("/accounts")
-@AllArgsConstructor
+@RequiredArgsConstructor
+@Validated
 public class AccountController {
+
     private final AccountService accountService;
 
     @GetMapping
-    public ResponseEntity<List<AccountDtoResponse>> getAccounts() {
+    public ResponseEntity<List<AccountDto>> getAccounts() {
 
         return new ResponseEntity<>(accountService.findAll(), HttpStatus.OK);
     }
 
     @PostMapping
-    public ResponseEntity<String> create(@RequestBody @Valid AccountDtoCreation accountDto) {
+    public ResponseEntity<String> create(@Validated(value = OnCreate.class) @RequestBody AccountDto accountDto) {
         accountService.create(accountDto);
 
         return new ResponseEntity<>("Счет создан", HttpStatus.CREATED);
     }
 
     @PatchMapping("/deposit")
-    public ResponseEntity<HttpStatus> deposit(@RequestBody @Valid AccountDtoOperation accountDto) {
+    public ResponseEntity<HttpStatus> deposit(@Validated(value = OnOperation.class) @RequestBody AccountDto accountDto) {
         accountService.deposit(accountDto);
 
         return ResponseEntity.ok(HttpStatus.OK);
     }
 
     @PatchMapping("/withdraw")
-    public ResponseEntity<HttpStatus> withdraw(@RequestBody @Valid AccountDtoOperation accountDto) {
+    public ResponseEntity<HttpStatus> withdraw(@Validated(value = OnOperation.class) @RequestBody AccountDto accountDto) {
         accountService.withdraw(accountDto);
 
         return ResponseEntity.ok(HttpStatus.OK);
     }
 
     @PatchMapping("/transfer")
-    public ResponseEntity<HttpStatus> transfer(@RequestBody @Valid AccountDtoTransfer accountDto) {
+    public ResponseEntity<HttpStatus> transfer(@Validated(value = OnTransfer.class) @RequestBody AccountDto accountDto) {
         accountService.transfer(accountDto);
 
         return ResponseEntity.ok(HttpStatus.OK);
+    }
+
+    @DeleteMapping()
+    public void delete(@RequestBody @Validated(value = OnCreate.class) AccountDto accountDto){
+        accountService.delete(accountDto);
     }
 
 }
