@@ -1,11 +1,13 @@
 package ru.nazimov.BankAccounts.model;
 
 import jakarta.persistence.*;
-import lombok.*;
-
-import java.util.UUID;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
+import java.util.UUID;
 
 @Entity
 @Table(name = "account")

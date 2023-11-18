@@ -3,11 +3,11 @@ package ru.nazimov.BankAccounts.util;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
 import ru.nazimov.BankAccounts.dto.AccountDto;
-import ru.nazimov.BankAccounts.model.Account;
-import ru.nazimov.BankAccounts.repository.AccountRepository;
 import ru.nazimov.BankAccounts.exception.AccountAuthorizationException;
 import ru.nazimov.BankAccounts.exception.AccountException;
 import ru.nazimov.BankAccounts.exception.AccountNotCreatedException;
+import ru.nazimov.BankAccounts.model.Account;
+import ru.nazimov.BankAccounts.repository.AccountRepository;
 
 import java.util.Optional;
 

@@ -5,7 +5,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import ru.nazimov.BankAccounts.dto.*;
+import ru.nazimov.BankAccounts.dto.AccountDto;
 import ru.nazimov.BankAccounts.dto.validation.OnCreate;
 import ru.nazimov.BankAccounts.dto.validation.OnOperation;
 import ru.nazimov.BankAccounts.dto.validation.OnTransfer;
@@ -58,7 +58,7 @@ public class AccountController {
     }
 
     @DeleteMapping()
-    public void delete(@RequestBody @Validated(value = OnCreate.class) AccountDto accountDto){
+    public void delete(@RequestBody @Validated(value = OnCreate.class) AccountDto accountDto) {
         accountService.delete(accountDto);
     }
 

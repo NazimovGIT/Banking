@@ -19,7 +19,7 @@ public class AccountExceptionHandler {
 
     @ExceptionHandler
     private ResponseEntity<AccountErrorResponse> handleAccountException(AccountException e) {
-        AccountErrorResponse response = new AccountErrorResponse (e.getMessage());
+        AccountErrorResponse response = new AccountErrorResponse(e.getMessage());
         return new ResponseEntity<>(response, getHttpStatus(e));
     }
 
@@ -35,7 +35,7 @@ public class AccountExceptionHandler {
 
     @ExceptionHandler
     private ResponseEntity<AccountErrorResponse> handleException(Exception e) {
-        AccountErrorResponse response = new AccountErrorResponse ("Что-то пошло не так.");
+        AccountErrorResponse response = new AccountErrorResponse("Что-то пошло не так.");
         return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
