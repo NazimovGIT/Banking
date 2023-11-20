@@ -11,7 +11,9 @@ import ru.nazimov.BankAccounts.dto.validation.OnOperation;
 import ru.nazimov.BankAccounts.dto.validation.OnTransfer;
 import ru.nazimov.BankAccounts.service.AccountService;
 
+import java.math.BigDecimal;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @RestController
@@ -21,11 +23,6 @@ import java.util.UUID;
 public class AccountController {
 
     private final AccountService accountService;
-
-    @GetMapping
-    public ResponseEntity<List<AccountDto>> getAccounts() {
-        return new ResponseEntity<>(accountService.findAll(), HttpStatus.OK);
-    }
 
     @PostMapping
     public ResponseEntity<AccountDto> create(@Validated(value = OnCreate.class) @RequestBody AccountDto accountDto) {
@@ -37,6 +34,13 @@ public class AccountController {
     public ResponseEntity<AccountDto> getById(@PathVariable UUID id){
         AccountDto accountDto = accountService.getById(id);
         return new ResponseEntity<>(accountDto, HttpStatus.OK);
+    }
+
+    @GetMapping
+    public ResponseEntity<List<AccountDto>> getAccounts(@RequestParam (required = false) Optional<BigDecimal> balance) {
+        List<AccountDto> accounts = balance.map(accountService::getAccountsByBalanceAtLeast)
+                .orElse(accountService.getAccounts());
+        return new ResponseEntity<>(accounts, HttpStatus.OK);
     }
 
     @PatchMapping("/deposit")
@@ -58,8 +62,9 @@ public class AccountController {
     }
 
     @DeleteMapping()
-    public void delete(@RequestBody @Validated(value = OnCreate.class) AccountDto accountDto) {
+    public ResponseEntity<String> delete(@RequestBody @Validated(value = OnCreate.class) AccountDto accountDto) {
         accountService.delete(accountDto);
+        return new ResponseEntity<>("Счет успешно удален", HttpStatus.OK);
     }
 
 }

@@ -2,7 +2,10 @@ package ru.nazimov.BankAccounts.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import ru.nazimov.BankAccounts.dto.validation.OnCreate;
 import ru.nazimov.BankAccounts.dto.validation.OnOperation;
 import ru.nazimov.BankAccounts.dto.validation.OnTransfer;
