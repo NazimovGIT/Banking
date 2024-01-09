@@ -6,7 +6,7 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.nazimov.BankAccounts.dto.AccountDto;
 import ru.nazimov.BankAccounts.exception.AccountNotFoundException;
 import ru.nazimov.BankAccounts.exception.AccountOperationException;
-import ru.nazimov.BankAccounts.mappers.AccountMapper;
+import ru.nazimov.BankAccounts.mapper.Mapper;
 import ru.nazimov.BankAccounts.model.Account;
 import ru.nazimov.BankAccounts.repository.AccountRepository;
 import ru.nazimov.BankAccounts.util.AccountUtil;
@@ -22,7 +22,7 @@ import java.util.UUID;
 public class AccountService {
 
     private final AccountRepository repository;
-    private final AccountMapper mapper;
+    private final Mapper<Account, AccountDto> mapper;
     private final AccountValidator validator;
 
     @Transactional

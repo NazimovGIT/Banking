@@ -7,8 +7,12 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import ru.nazimov.BankAccounts.dto.AccountDto;
-import ru.nazimov.BankAccounts.exception.*;
-import ru.nazimov.BankAccounts.mappers.AccountMapper;
+import ru.nazimov.BankAccounts.exception.AccountAuthorizationException;
+import ru.nazimov.BankAccounts.exception.AccountException;
+import ru.nazimov.BankAccounts.exception.AccountNotCreatedException;
+import ru.nazimov.BankAccounts.exception.AccountNotFoundException;
+import ru.nazimov.BankAccounts.exception.AccountOperationException;
+import ru.nazimov.BankAccounts.mapper.Mapper;
 import ru.nazimov.BankAccounts.model.Account;
 import ru.nazimov.BankAccounts.repository.AccountRepository;
 import ru.nazimov.BankAccounts.service.AccountService;
@@ -22,7 +26,11 @@ import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static ru.nazimov.BankAccounts.util.AccountUtil.getAccountNumber;
 
 @ExtendWith(MockitoExtension.class)
@@ -32,7 +40,7 @@ public class AccountServiceTests {
     @Mock
     private AccountValidator validator;
     @Mock
-    private AccountMapper mapper;
+    private Mapper<Account, AccountDto> mapper;
     @InjectMocks
     private AccountService service;
     private AccountDto accountDto;
